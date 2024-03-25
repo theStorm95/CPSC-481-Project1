@@ -1,41 +1,30 @@
-def bfs(graph, start, goal):
-    explored = []
+import heapq
 
-    queue = [[start]]
-     
-    # If the desired node is 
-    # reached
+def bfs(graph, start, goal):
+    explored = set()
+    queue = [(0, [start])]  # (priority, path)
+
     if start == goal:
         print("Same Node")
         return
-     
-    # Loop to traverse the graph 
-    # with the help of the queue
+
     while queue:
-        path = queue.pop(0)
+        priority, path = heapq.heappop(queue)
         node = path[-1]
-         
-        # Condition to check if the
-        # current node is not visited
-        if node[0] not in explored:
-            neighbours = graph[node[0]]
-             
-            # Loop to iterate over the 
-            # neighbours of the node
-            for neighbour in neighbours:
-                new_path = list(path)
-                new_path.append(neighbour)
-                queue.append(new_path)
-                 
-                # Condition to check if the 
-                # neighbour node is the goal
-                if neighbour[0] == goal:
-                    print("Shortest path = ", *new_path)
-                    return
-            explored.append(node[0])
- 
-    # Condition when the nodes 
-    # are not connected
-    print("So sorry, but a connecting"\
-                "path doesn't exist :(")
+
+        if node not in explored:
+            explored.add(node)
+
+            if node == goal:
+                print("Shortest path =", *path)
+                return
+
+            for neighbour, edge_cost in graph[node]:
+                if neighbour not in explored:
+                    new_priority = priority + edge_cost
+                    new_path = list(path)
+                    new_path.append(neighbour)
+                    heapq.heappush(queue, (new_priority, new_path))
+
+    print("So sorry, but a connecting path doesn't exist :(")
     return
